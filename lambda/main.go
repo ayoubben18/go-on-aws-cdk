@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"lambda-func/app"
 
+	"lambda-func/middleware"
+
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 )
@@ -20,14 +22,23 @@ func HandleRequest(event MyEvent) (string, error) {
 	return fmt.Sprintf("Successfully processed user: %s", event.Username), nil
 }
 
+func ProtectedHandler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	return events.APIGatewayProxyResponse{
+		StatusCode: 200,
+		Body: "This is a protected route",
+	}, nil
+}
+
 func main() {	
 	myApp := app.NewApp()
 	lambda.Start(func (request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)  {
 		switch request.Path {
 		case "/register":
-			return myApp.ApiHandler.RegisterUserHandler(request)
+			return myApp.ApiHandler.RegisterUser(request)
 		case "/login":
 			return myApp.ApiHandler.LoginUser(request)
+		case "/protected":
+			return middleware.ValidateJWTMiddleware(ProtectedHandler)(request)
 		default:
 			return events.APIGatewayProxyResponse{
 				StatusCode: 404,
