@@ -21,7 +21,7 @@ func NewApiHandler(dbStore database.UserStore) ApiHandler {
 }
 
 
-func (a *ApiHandler) RegisterUserHandler(event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)  {
+func (a ApiHandler) RegisterUserHandler(event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)  {
 	var registerUser types.RegisterUser
 
 	err := json.Unmarshal([]byte(event.Body), &registerUser)
