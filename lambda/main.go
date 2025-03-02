@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"lambda-func/app"
 
 	"github.com/aws/aws-lambda-go/lambda"
 )
@@ -18,7 +19,7 @@ func HandleRequest(event MyEvent) (string, error) {
 	return fmt.Sprintf("Successfully processed user: %s", event.Username), nil
 }
 
-func main() {
-	lambda.Start(HandleRequest)
-
+func main() {	
+	myApp := app.NewApp()
+	lambda.Start(myApp.ApiHandler.RegisterUserHandler)
 }
